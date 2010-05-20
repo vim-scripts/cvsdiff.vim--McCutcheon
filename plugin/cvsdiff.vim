@@ -36,16 +36,21 @@ noremap <unique> <script> <plug>Cvsdiffv :call <SID>Cvsdiff("v")<CR>
 com! -bar -nargs=* Cvsdiff :call s:Cvsdiff(<f-args>)
 
 function! s:Cvsdiff(...)
-    let rev = ''
-    let split = ''
     
     if a:0 > 1
         let rev = a:2
         let split = a:1
-    elseif a:0 > 0 && a:1 == 'v'
-        let split = a:1
-    elseif a:0 > 0
-        let rev = a:1
+    elseif a:0 == 1 
+	if a:1 == 'v' 
+	    let rev = ''
+	    let split = 'v'
+	else
+	    let rev = a:1
+	    let split = ''
+	endif
+    else
+	let rev = ''
+	let split = ''
     endif
 
     let ftype = &filetype
@@ -53,7 +58,11 @@ function! s:Cvsdiff(...)
     let cmd = "cat " . bufname("%") . " > " . tmpfile
     let cmd_output = system(cmd)
     let tmpdiff = tempname()
-    let cmd = "cvs diff -r " . rev . " " . bufname("%") . " > " . tmpdiff
+    if rev == ''
+	let cmd = "cvs diff " . bufname("%") . " > " . tmpdiff
+    else
+	let cmd = "cvs diff -r " . rev . " " . bufname("%") . " > " . tmpdiff
+    endif
     let cmd_output = system(cmd)
     if v:shell_error && cmd_output != ""
         echohl WarningMsg | echon cmd_output 
