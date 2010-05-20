@@ -36,15 +36,16 @@ noremap <unique> <script> <plug>Cvsdiffv :call <SID>Cvsdiff("v")<CR>
 com! -bar -nargs=* Cvsdiff :call s:Cvsdiff(<f-args>)
 
 function! s:Cvsdiff(...)
+    let rev = ''
+    let split = ''
+    
     if a:0 > 1
         let rev = a:2
         let split = a:1
+    elseif a:0 > 0 && a:1 == 'v'
+        let split = a:1
     elseif a:0 > 0
         let rev = a:1
-        let split = ''
-    else
-        let rev = ''
-        let split = ''
     endif
 
     let ftype = &filetype
@@ -66,7 +67,7 @@ function! s:Cvsdiff(...)
         return
     endif
 
-    if split == "v"
+    if split == 'v'
         exe "vert diffsplit" . tmpfile
     else
         exe "diffsplit" . tmpfile
